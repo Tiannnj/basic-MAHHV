@@ -104,5 +104,9 @@ for w in agents_action:
 
 eval_dones =  tuple[[True]]
 eval_masks = np.ones((2, 2, 1), dtype=np.float32)
-eval_masks[eval_dones == True] = np.zeros(((eval_dones == True).sum(), 1), dtype=np.float32)
 print(eval_masks)
+
+
+x = [0, 1, 2]
+x = [5] * 3
+print(x)

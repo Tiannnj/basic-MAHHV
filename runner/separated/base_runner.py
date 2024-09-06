@@ -166,6 +166,7 @@ class Runner(object):
             policy_critic_state_dict = torch.load(
                 str(self.model_dir) + "/critic_agent" + str(agent_id) + ".pt"
             )
+
             self.policy[agent_id].critic.load_state_dict(policy_critic_state_dict)
 
     def log_train(self, train_infos, total_num_steps):

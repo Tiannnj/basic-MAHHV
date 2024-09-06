@@ -591,7 +591,6 @@ class vorenv(gym.Env):
             # get the observation for OU
             o_pre_state = self.Mahhv_get_agent_obs()[o_agent_num]
             real_state.append(o_pre_state)
-            print('o_pre_state', o_pre_state)
             num_o_receive = self.Mahhv_get_agent_obs()[o_agent_num][-4:-2]
             num_o_tra = o_pre_state[-2:]
             num_r_rtr = np.array([[0, 0], [0, 0], [0, 0], [0, 0]])
@@ -745,7 +744,6 @@ class vorenv(gym.Env):
                     # Generate the final ddl information
                     # np.array(list(self.r_m_new()))[v, 5] = np.array(list(self.o_v_new.values()))[v, 5] - rm_total_delay
                     r_ddl[r_agent_num] = r_ddl[r_agent_num] + r_pre_state[3 + v * 3 + 2] - rm_total_delay
-                    print('r_agent_num', r_agent_num, r_ddl[r_agent_num], r_ddl)
 
             # The fairness in the RU observation state has to be changed
             self.r_assign[r_agent_num] = num_r_rtr[r_agent_num]
@@ -762,7 +760,8 @@ class vorenv(gym.Env):
             f_o_tra = (sum(self.o_tra[agent_o])) ** 2 / (2 * y + 0.0000001)
             o_delay = sum(ou_remain_ddl[agent_o])
             rewards_ou[agent_o] = float(o_delay * f_o_rec * f_o_tra)
-        # print('rewards_ou', rewards_ou)
+        # use the average reward to update
+        rewards_ou_average = [sum(rewards_ou)/2] * self.n_o_agents
 
         # calculate the reward for each RU
         z = 0
@@ -771,11 +770,9 @@ class vorenv(gym.Env):
                 z = z + k ** 2
             f_r_rtr = (sum(self.r_assign[agent_r])) ** 2 / (2 * z + 0.0000001)
             rewards_ru[agent_r] = float(r_ddl[agent_r] * f_r_rtr)
-        # print('rewards_ru', rewards_ru)
 
         # Generate the total reward
-        rewards = rewards_ou + rewards_ru
-        print('rewards', rewards)
+        rewards = rewards_ou_average + rewards_ru
 
         # Adjust new environmental information
         self.Mahhv_reset()
@@ -786,19 +783,7 @@ class vorenv(gym.Env):
         for r in range(0, self.n_r_agents):
             self.r_assign[r] = num_r_rtr[r]
 
-        # new_state = np.array(self.Mahhv_reset())
-        # note the test count in the previous steps
-        # new_state[0 :  self.n_o_agents, -4: -2] = num_o_receive[:]
-        # for xx in range (0, self.n_o_agents):
-        #     new_state[0 : xx, -2: ] = self.o_tra[xx]
-        # for yy in range (0, self.n_r_agents):
-        #     new_state[2 : 2 + yy, -2: ] = self.r_assign[yy]
-        #
-        # for i in range(self.n_agents):
-        #     self._total_episode_reward[i] += rewards[i]
-
         real_state = o_pre_state + r_pre_state
-        print('real_state', real_state)
         # print('new_state', self.Mahhv_get_agent_obs())
         return self.Mahhv_get_agent_obs(), rewards, self._agent_dones
 

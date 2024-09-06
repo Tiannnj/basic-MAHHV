@@ -18,9 +18,8 @@ class EnvRunner(Runner):
 
     def run(self):
         self.warmup()
-
         start = time.time()
-        self.num_env_steps = 100000
+        self.num_env_steps = 1000000
         self.episode_length = 100
         episodes = int(self.num_env_steps) // self.episode_length // self.n_rollout_threads
 
@@ -44,7 +43,7 @@ class EnvRunner(Runner):
 
 
                 # Obser reward and next obs
-                print('******step******', step)
+                # print('******step******', step)
                 obs, rewards, dones = self.envs.step(actions_env)
 
                 data = (
@@ -252,7 +251,6 @@ class EnvRunner(Runner):
             dtype=np.float32,
         )
         eval_masks = np.ones((self.n_eval_rollout_threads, self.num_agents, 1), dtype=np.float32)
-        print('eval_masks', eval_masks)
         # print("net",[trainer.policy.actor for trainer in self.trainer])
         # print("net", [trainer.policy.critic for trainer in self.trainer])
         for eval_step in range(self.episode_length):
